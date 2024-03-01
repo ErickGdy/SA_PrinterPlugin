@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "JVZxB6vQH4+G5IIWjZNQ+7VHhdHtJZExzI50Ifaf7kl0O1Uvi2ufdhqKA10x53IFiS9p5fWl+l89RmHqj8XipA==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\Erick VM\\source\\repos\\SA_PrinterPlugin\\SA_PrinterPlugin\\SA_PrinterPlugin.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Erick VM\\.nuget\\packages\\pdftoprinter\\1.5.2\\pdftoprinter.1.5.2.nupkg.sha512"
+  ],
+  "logs": []
+}

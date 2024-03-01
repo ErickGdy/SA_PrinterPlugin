@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>SA_PrinterPlugin</id>
+    <version>1.0.0</version>
+    <authors>SA_PrinterPlugin</authors>
+    <description>Package Description</description>
+    <repository type="git" />
+    <dependencies>
+      <group targetFramework="net8.0">
+        <dependency id="PDFtoPrinter" version="1.5.2" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+    <contentFiles>
+      <files include="any/net8.0/PDFtoPrinter_m.exe" buildAction="Content" />
+      <files include="any/net8.0/PDF-XChange Viewer Settings.dat" buildAction="Content" />
+    </contentFiles>
+  </metadata>
+  <files>
+    <file src="C:\Users\Erick VM\source\repos\SA_PrinterPlugin\SA_PrinterPlugin\bin\Debug\net8.0\SA_PrinterPlugin.runtimeconfig.json" target="lib\net8.0\SA_PrinterPlugin.runtimeconfig.json" />
+    <file src="C:\Users\Erick VM\source\repos\SA_PrinterPlugin\SA_PrinterPlugin\bin\Debug\net8.0\SA_PrinterPlugin.dll" target="lib\net8.0\SA_PrinterPlugin.dll" />
+    <file src="C:\Users\Erick VM\.nuget\packages\pdftoprinter\1.5.2\build\PDFtoPrinter_m.exe" target="content\PDFtoPrinter_m.exe" />
+    <file src="C:\Users\Erick VM\.nuget\packages\pdftoprinter\1.5.2\build\PDFtoPrinter_m.exe" target="contentFiles\any\net8.0\PDFtoPrinter_m.exe" />
+    <file src="C:\Users\Erick VM\.nuget\packages\pdftoprinter\1.5.2\build\PDF-XChange Viewer Settings.dat" target="content\PDF-XChange Viewer Settings.dat" />
+    <file src="C:\Users\Erick VM\.nuget\packages\pdftoprinter\1.5.2\build\PDF-XChange Viewer Settings.dat" target="contentFiles\any\net8.0\PDF-XChange Viewer Settings.dat" />
+  </files>
+</package>

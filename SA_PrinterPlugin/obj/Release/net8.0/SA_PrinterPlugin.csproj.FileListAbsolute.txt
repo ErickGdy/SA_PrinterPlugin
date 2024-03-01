@@ -1,0 +1,17 @@
+C:\Users\Erick VM\source\repos\SA_PrinterPlugin\SA_PrinterPlugin\bin\Release\net8.0\SA_PrinterPlugin.exe
+C:\Users\Erick VM\source\repos\SA_PrinterPlugin\SA_PrinterPlugin\bin\Release\net8.0\SA_PrinterPlugin.deps.json
+C:\Users\Erick VM\source\repos\SA_PrinterPlugin\SA_PrinterPlugin\bin\Release\net8.0\SA_PrinterPlugin.runtimeconfig.json
+C:\Users\Erick VM\source\repos\SA_PrinterPlugin\SA_PrinterPlugin\bin\Release\net8.0\SA_PrinterPlugin.dll
+C:\Users\Erick VM\source\repos\SA_PrinterPlugin\SA_PrinterPlugin\bin\Release\net8.0\SA_PrinterPlugin.pdb
+C:\Users\Erick VM\source\repos\SA_PrinterPlugin\SA_PrinterPlugin\bin\Release\net8.0\PDFtoPrinter.dll
+C:\Users\Erick VM\source\repos\SA_PrinterPlugin\SA_PrinterPlugin\obj\Release\net8.0\SA_PrinterPlugin.csproj.AssemblyReference.cache
+C:\Users\Erick VM\source\repos\SA_PrinterPlugin\SA_PrinterPlugin\obj\Release\net8.0\SA_PrinterPlugin.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Erick VM\source\repos\SA_PrinterPlugin\SA_PrinterPlugin\obj\Release\net8.0\SA_PrinterPlugin.AssemblyInfoInputs.cache
+C:\Users\Erick VM\source\repos\SA_PrinterPlugin\SA_PrinterPlugin\obj\Release\net8.0\SA_PrinterPlugin.AssemblyInfo.cs
+C:\Users\Erick VM\source\repos\SA_PrinterPlugin\SA_PrinterPlugin\obj\Release\net8.0\SA_PrinterPlugin.csproj.CoreCompileInputs.cache
+C:\Users\Erick VM\source\repos\SA_PrinterPlugin\SA_PrinterPlugin\obj\Release\net8.0\SA_PrinterPlugin.csproj.CopyComplete
+C:\Users\Erick VM\source\repos\SA_PrinterPlugin\SA_PrinterPlugin\obj\Release\net8.0\SA_PrinterPlugin.dll
+C:\Users\Erick VM\source\repos\SA_PrinterPlugin\SA_PrinterPlugin\obj\Release\net8.0\refint\SA_PrinterPlugin.dll
+C:\Users\Erick VM\source\repos\SA_PrinterPlugin\SA_PrinterPlugin\obj\Release\net8.0\SA_PrinterPlugin.pdb
+C:\Users\Erick VM\source\repos\SA_PrinterPlugin\SA_PrinterPlugin\obj\Release\net8.0\SA_PrinterPlugin.genruntimeconfig.cache
+C:\Users\Erick VM\source\repos\SA_PrinterPlugin\SA_PrinterPlugin\obj\Release\net8.0\ref\SA_PrinterPlugin.dll

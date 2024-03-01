@@ -1,0 +1,8 @@
+C:\Users\Erick VM\source\repos\SA_PrinterPlugin\SA_PrinterPlugin\bin\Release\net8.0\publish\win-x86\SA_PrinterPlugin.exe
+C:\Users\Erick VM\source\repos\SA_PrinterPlugin\SA_PrinterPlugin\bin\Release\net8.0\publish\win-x86\PDFtoPrinter_m.exe
+C:\Users\Erick VM\source\repos\SA_PrinterPlugin\SA_PrinterPlugin\bin\Release\net8.0\publish\win-x86\PDF-XChange Viewer Settings.dat
+C:\Users\Erick VM\source\repos\SA_PrinterPlugin\SA_PrinterPlugin\bin\Release\net8.0\publish\win-x86\SA_PrinterPlugin.dll
+C:\Users\Erick VM\source\repos\SA_PrinterPlugin\SA_PrinterPlugin\bin\Release\net8.0\publish\win-x86\SA_PrinterPlugin.deps.json
+C:\Users\Erick VM\source\repos\SA_PrinterPlugin\SA_PrinterPlugin\bin\Release\net8.0\publish\win-x86\SA_PrinterPlugin.runtimeconfig.json
+C:\Users\Erick VM\source\repos\SA_PrinterPlugin\SA_PrinterPlugin\bin\Release\net8.0\publish\win-x86\SA_PrinterPlugin.pdb
+C:\Users\Erick VM\source\repos\SA_PrinterPlugin\SA_PrinterPlugin\bin\Release\net8.0\publish\win-x86\PDFtoPrinter.dll

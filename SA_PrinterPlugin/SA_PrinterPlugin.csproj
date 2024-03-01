@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <ApplicationIcon>SA_Print.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="SA_Print.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="PDFtoPrinter" Version="1.5.2" />
+  </ItemGroup>
+
+</Project>
