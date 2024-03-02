@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SA_PrinterPlugin")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6e65db38a61eb994383065c7596638a126ef1f9a")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9b299482f63b69da341e5d10e2a880cff09c442a")]
 [assembly: System.Reflection.AssemblyProductAttribute("SA_PrinterPlugin")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SA_PrinterPlugin")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
