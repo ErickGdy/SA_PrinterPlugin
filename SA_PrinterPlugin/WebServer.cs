@@ -10,10 +10,11 @@ namespace HTTPServer
     class WebServer
     {
         string filePath = @"Blank.pdf";
-        public WebServer(int port, string path)
+        public WebServer(Dictionary<string, string> configParams)
         {
-            this.port = port;
-            this.home = path;
+            this.port = Convert.ToInt32(configParams["Port"]);
+            this.home = configParams["Home"];
+            this.QZName = configParams["QZName"];
             listener = new TcpListener(IPAddress.Any, port);
         }
 
@@ -35,13 +36,30 @@ namespace HTTPServer
                     NetworkStream stream = client.GetStream();
                     int size = stream.Read(result, 0, result.Length);
                     requestData = System.Text.Encoding.ASCII.GetString(result, 0, size);
-
-                    Request request = GetRequest(requestData);
-                    ProcessRequest(request, stream);
+                    Request request;
+                    try
+                    {
+                        request = GetRequest(requestData);
+                    }
+                    catch {
+                        GenerateResponse("Error: Parametros incorrectos", stream, 500);
+                        client.Close();
+                        continue;
+                    }
+                    try
+                    {
+                        ProcessRequest(request, stream);
+                    }
+                    catch
+                    {
+                        GenerateResponse("Error: Ha ocurrido un error al procesar la solicitud", stream, 500);
+                        client.Close();
+                        continue;
+                    }
                     client.Close();
                 }
             }
-            finally
+            catch
             {
                 listener.Stop();
             }
@@ -53,30 +71,56 @@ namespace HTTPServer
             {
                 return;
             }
-         
-            string printerName = request.QueryParams["Printer"];
+            string printerName = "", actionName = "";
+            try
+            {
+                printerName = request.QueryParams["Printer"];
+            }
+            catch { }
+            try
+            {
+                actionName = request.QueryParams["Action"];
+            }
+            catch { }
+
             if (!string.IsNullOrEmpty(printerName))
             {
-                Print(printerName);
-                GenerateResponse("printerName", stream, OK200);
+                try
+                {
+                    Print(printerName);
+                    GenerateResponse(printerName, stream, 200);
+                }
+                catch
+                {
+                    GenerateResponse("Error", stream, 500);
+                }
+                return;
+            }
+            else if (!string.IsNullOrEmpty(actionName))
+            {
+                switch (actionName.ToUpper())
+                {
+                    case "QZ":
+                        try
+                        {
+                            OpenQZ();
+                            GenerateResponse("Abriendo QZ", stream, 200);
+                        }
+                        catch(Exception ex)
+                        {
+                            GenerateResponse($"Error: {ex.Message}", stream, 500);
+                        }
+                        return;
+                    default:
+                        GenerateResponse("Solicitud No Encontrada", stream, 404);
+                        return;
+                }
             }
             else
             {
-                GenerateResponse("Not found", stream, NOTFOUND404);
+                GenerateResponse("Solicitud No Encontrada", stream, 404);
+                return;
             }
-
-
-            //if (request.Path.Equals("/"))
-             //   request.Path = "/home.html";
-            //ParsePath(request);
-            //if (File.Exists(request.Path))
-            //{
-            //    var fileContent = File.ReadAllText(request.Path);
-            //    GenerateResponse(fileContent, stream, OK200);
-            //    return;
-            //}
-
-            GenerateResponse("Not found", stream, NOTFOUND404);
         }
 
         private void ParsePath(Request request)
@@ -87,9 +131,23 @@ namespace HTTPServer
 
         private void GenerateResponse(string content,
             NetworkStream stream,
-            string responseHeader)
+            int httpResponse)
         {
             string response = "HTTP/1.1 200 OK\r\n\r\n\r\n";
+            switch (httpResponse)
+            {
+                case int n when (n >= 400 && n < 500):
+                    response = "HTTP/1.1 404 NOTFOUND\r\n\r\n\r\n";
+                    break;
+                case int n when (n >= 200 && n < 300):
+                    response = "HTTP/1.1 200 OK\r\n\r\n\r\n";
+                    break;
+                case int n when (n >= 500 && n < 600):
+                    response = "HTTP/1.1 500 Internal Server Error\r\n\r\n\r\n";
+                    break;
+                default:
+                    break;
+            }
             response = response + content;
             byte[] msg = System.Text.Encoding.ASCII.GetBytes(response);
             stream.Write(msg, 0, msg.Length);
@@ -111,7 +169,7 @@ namespace HTTPServer
             request.Command = list[0];
             request.Path = list[1];
             request.Protocol = list[2].Split('\n')[0];
-            request.Host = list[6].Split('\n')[0].Replace("\r","") + list[1];
+            request.Host = list[6].Split('\n')[0].Replace("\r", "") + list[1];
             request.QueryParams = GetParams(request);
             return request;
         }
@@ -119,6 +177,7 @@ namespace HTTPServer
         private TcpListener listener;
         private int port;
         private string home;
+        private string QZName;
         private static string NOTFOUND404 = "HTTP/1.1 404 Not Found";
         private static string OK200 = "HTTP/1.1 200 OK\r\n\r\n\r\n";
         private static int MAX_SIZE = 1000;
@@ -131,6 +190,37 @@ namespace HTTPServer
             printer.Print(new PrintingOptions(networkPrinterName, filePath), printTimeout);
         }
 
+        private void OpenQZ()
+        {
+            var QZexePath = Directory.EnumerateFiles("C:\\Program Files\\", $"*{this.QZName}*", new EnumerationOptions
+            {
+                IgnoreInaccessible = true,
+                RecurseSubdirectories = true
+            }).FirstOrDefault();
+            if (string.IsNullOrEmpty(QZexePath))
+                throw new Exception($"{this.QZName} no encontrado");
+            System.Diagnostics.Process.Start(QZexePath);
+
+        }
+        static void ApplyAllFiles(string folder, Action<string> fileAction)
+        {
+            foreach (string file in Directory.GetFiles(folder))
+            {
+                fileAction(file);
+            }
+            foreach (string subDir in Directory.GetDirectories(folder))
+            {
+                try
+                {
+                    ApplyAllFiles(subDir, fileAction);
+                }
+                catch
+                {
+                    // swallow, log, whatever
+                }
+            }
+        }
+
         private Dictionary<string, string> GetParams(Request request)
         {
             string fullPath = request.Host;
@@ -139,12 +229,12 @@ namespace HTTPServer
             var queryString = uri.Query;
 
             // Parsear los parámetros en un diccionario
-            var queryDict =  HttpUtility.ParseQueryString(queryString);
+            var queryDict = HttpUtility.ParseQueryString(queryString);
             Dictionary<string, string> queryParams = new Dictionary<string, string>();
             // Iterar sobre los parámetros y sus valores
             foreach (string key in queryDict.AllKeys)
             {
-                queryParams.Add(key,queryDict.Get(key));
+                queryParams.Add(key, queryDict.Get(key));
             }
             return queryParams;
         }
@@ -157,7 +247,7 @@ namespace HTTPServer
         public string Path;
         public string Protocol;
         public string Host;
-        public Dictionary<string,string> QueryParams;
+        public Dictionary<string, string> QueryParams;
 
     }
 
