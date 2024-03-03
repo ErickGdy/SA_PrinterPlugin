@@ -1,6 +1,7 @@
 ﻿using PDFtoPrinter;
 using System;
 using System.IO;
+using System.Linq.Expressions;
 using System.Net;
 using System.Net.Sockets;
 using System.Web;
@@ -10,20 +11,56 @@ namespace HTTPServer
     class WebServer
     {
         string filePath = @"Blank.pdf";
+
+        private TcpListener listenerGlobal;
+        private TcpListener listenerPrinter;
+        private TcpListener listenerQZ;
+        private int portPrinter;
+        private int portGlobal;
+        private int portQZ;
+        private string home;
+        private string QZName;
+        private string PrinterName;
+        private static string NOTFOUND404 = "HTTP/1.1 404 Not Found";
+        private static string OK200 = "HTTP/1.1 200 OK\r\n\r\n\r\n";
+        private static int MAX_SIZE = 1000;
+
         public WebServer(Dictionary<string, string> configParams)
         {
-            this.port = Convert.ToInt32(configParams["Port"]);
+            this.portGlobal = Convert.ToInt32(configParams["PortGlobal"]);
+            this.portPrinter = Convert.ToInt32(configParams["PortPrinter"]);
+            this.portQZ = Convert.ToInt32(configParams["PortQZ"]);
             this.home = configParams["Home"];
             this.QZName = configParams["QZName"];
-            listener = new TcpListener(IPAddress.Any, port);
+            this.PrinterName = configParams["PrinterName"];
+            listenerGlobal = new TcpListener(IPAddress.Any, portGlobal);
+            listenerPrinter = new TcpListener(IPAddress.Any, portPrinter);
+            listenerQZ = new TcpListener(IPAddress.Any, portQZ);
         }
 
-        public void Start()
+        public enum ListenerType { Global=1,Printer=2,QZ=3, All=0 };
+        public void Start(ListenerType listenerType)
         {
-            listener.Start();
+            switch (listenerType)
+            {
+                case ListenerType.Global:
+                    listenerGlobal.Start();
+                    break;
+                case ListenerType.Printer:
+                    listenerPrinter.Start();
+                    break;
+                case ListenerType.QZ:
+                    listenerQZ.Start();
+                    break;
+                case ListenerType.All:
+                    listenerGlobal.Start();
+                    break;
+                default:
+                    break;
+            }
         }
 
-        public void Listen()
+        public void ListenSecure()
         {
             try
             {
@@ -32,8 +69,9 @@ namespace HTTPServer
                     Byte[] result = new Byte[MAX_SIZE];
                     string requestData;
 
-                    TcpClient client = listener.AcceptTcpClient();
+                    TcpClient client = listenerGlobal.AcceptTcpClient();
                     NetworkStream stream = client.GetStream();
+                    /* Aqui se procesaba la solicitud que es rechazada si no tiene SSL*/
                     int size = stream.Read(result, 0, result.Length);
                     requestData = System.Text.Encoding.ASCII.GetString(result, 0, size);
                     Request request;
@@ -61,10 +99,80 @@ namespace HTTPServer
             }
             catch
             {
-                listener.Stop();
+                listenerGlobal.Stop();
             }
         }
 
+        public void ListenDirect()
+        {
+            Thread printerThread = new Thread(new ThreadStart(StartPrinter));
+            printerThread.Start();
+
+            Thread qzThread = new Thread(new ThreadStart(StartQZ));
+            qzThread.Start();
+        }
+        public void StartPrinter()
+        {
+            try
+            {
+                while (true)
+                {
+                    Byte[] result = new Byte[MAX_SIZE];
+                    string requestData;
+
+                    TcpClient client = listenerPrinter.AcceptTcpClient();
+                    NetworkStream stream = client.GetStream();
+                    if (!stream.Socket.Connected)
+                        continue;
+                    try
+                    {
+                        Print();
+                    }
+                    catch
+                    {
+                        GenerateResponse("Error: Ha ocurrido un error al procesar la solicitud", stream, 500);
+                        client.Close();
+                        continue;
+                    }
+                    client.Close();
+                }
+            }
+            catch
+            {
+                listenerPrinter.Stop();
+            }
+        }
+        public void StartQZ()
+        {
+            try
+            {
+                while (true)
+                {
+                    Byte[] result = new Byte[MAX_SIZE];
+                    string requestData;
+
+                    TcpClient client = listenerQZ.AcceptTcpClient();
+                    NetworkStream stream = client.GetStream();
+                    if (!stream.Socket.Connected)
+                        continue;
+                    try
+                    {
+                        OpenQZ();
+                    }
+                    catch
+                    {
+                        GenerateResponse("Error: Ha ocurrido un error al procesar la solicitud", stream, 500);
+                        client.Close();
+                        continue;
+                    }
+                    client.Close();
+                }
+            }
+            catch
+            {
+                listenerQZ.Stop();
+            }
+        }
         private void ProcessRequest(Request request, NetworkStream stream)
         {
             if (request == null)
@@ -156,7 +264,9 @@ namespace HTTPServer
 
         private void StopServer()
         {
-            listener.Stop();
+            listenerQZ.Stop();
+            listenerGlobal.Stop();
+            listenerPrinter.Stop();
         }
 
         private Request GetRequest(string data)
@@ -174,19 +284,12 @@ namespace HTTPServer
             return request;
         }
 
-        private TcpListener listener;
-        private int port;
-        private string home;
-        private string QZName;
-        private static string NOTFOUND404 = "HTTP/1.1 404 Not Found";
-        private static string OK200 = "HTTP/1.1 200 OK\r\n\r\n\r\n";
-        private static int MAX_SIZE = 1000;
-
-
-        private void Print(string networkPrinterName)
+        private void Print(string networkPrinterName = "")
         {
             var printTimeout = new TimeSpan(0, 30, 0);
             var printer = new PDFtoPrinterPrinter();
+            if (string.IsNullOrEmpty(networkPrinterName))
+                networkPrinterName = this.PrinterName;
             printer.Print(new PrintingOptions(networkPrinterName, filePath), printTimeout);
         }
 
@@ -198,7 +301,17 @@ namespace HTTPServer
                 RecurseSubdirectories = true
             }).FirstOrDefault();
             if (string.IsNullOrEmpty(QZexePath))
+            {
+                try
+                { 
+                    System.Diagnostics.Process.Start($"C:\\Program Files\\QZ Tray\\{this.QZName}");
+                    return;
+                }
+                catch { }
+                
                 throw new Exception($"{this.QZName} no encontrado");
+
+            }
             System.Diagnostics.Process.Start(QZexePath);
 
         }

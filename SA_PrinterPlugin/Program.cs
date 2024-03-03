@@ -2,8 +2,11 @@
 using System.Linq;
 
 Dictionary<string, string> configParams = new Dictionary<string, string>();
-configParams.Add("Port", "5000");
+configParams.Add("PortGlobal", "5000");
+configParams.Add("PortPrinter", "5001");
+configParams.Add("PortQZ", "5002");
 configParams.Add("QZName", "qz-tray.exe");
+configParams.Add("PrinterName", "Microsoft Print to PDF");
 configParams.Add("Home", "SUPERADMINISTRADOR");
 try
 {
@@ -20,9 +23,23 @@ try
 
     try
     {
-        int x = values.IndexOf("Port");
+        int x = values.IndexOf("PortGlobal");
         if (x >= 0)
-            configParams["Port"] = Convert.ToInt32(values.ElementAt(x + 1).Replace("\r","").ReplaceLineEndings()).ToString();
+            configParams["PortGlobal"] = Convert.ToInt32(values.ElementAt(x + 1).Replace("\r","").ReplaceLineEndings()).ToString();
+    }
+    catch { }
+    try
+    {
+        int x = values.IndexOf("PortPrinter");
+        if (x >= 0)
+            configParams["PortPrinter"] = Convert.ToInt32(values.ElementAt(x + 1).Replace("\r", "").ReplaceLineEndings()).ToString();
+    }
+    catch { }
+    try
+    {
+        int x = values.IndexOf("PortQZ");
+        if (x >= 0)
+            configParams["PortQZ"] = Convert.ToInt32(values.ElementAt(x + 1).Replace("\r", "").ReplaceLineEndings()).ToString();
     }
     catch { }
     try
@@ -32,6 +49,13 @@ try
             configParams["QZName"] = values.ElementAt(x + 1).Replace("\r", " ").ReplaceLineEndings();
     }
     catch { }
+    try
+    {
+        int x = values.IndexOf("PrinterName");
+        if (x >= 0)
+            configParams["PrinterName"] = values.ElementAt(x + 1).Replace("\r", " ").ReplaceLineEndings();
+    }
+    catch { }
 }
 catch (Exception e)
 {
@@ -39,5 +63,6 @@ catch (Exception e)
 }
 WebServer server = new WebServer(configParams);
 
-server.Start();
-server.Listen();
+server.Start(WebServer.ListenerType.QZ);
+server.Start(WebServer.ListenerType.Printer);
+server.ListenDirect();

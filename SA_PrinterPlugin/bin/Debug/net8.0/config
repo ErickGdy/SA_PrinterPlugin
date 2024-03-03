@@ -1,2 +1,5 @@
-Port:5000
+PortGlobal:5000
+PortPrinter:5001
+PortQZ:5002
 QZName:qz-tray.exe
+PrinterName:Microsoft Print to PDF
